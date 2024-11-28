@@ -16,8 +16,10 @@ return new class extends Migration
             $table->string('name');
             $table->boolean('status');
             $table->foreignId('module_id')->constrained()->onDelete('cascade');
+            $table->string('video_path')->nullable(); // Agregado campo video_path
             $table->timestamps();
         });
+        
     }
 
     /**

@@ -52,7 +52,20 @@
                     @auth
                         <ul class="navbar-nav me-auto">
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('home') }}">Proyectos</a>
+                                <a class="nav-link" href="{{ route('home') }}">Módulos</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                    Notificaciones
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="">Other</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item" href="#">Other</a></li>
+                                </ul>
                             </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"

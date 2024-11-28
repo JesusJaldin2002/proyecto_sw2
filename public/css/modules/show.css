@@ -1,0 +1,153 @@
+/* Estilo para el encabezado del módulo */
+.module-header {
+    font-size: 4rem; /* Tamaño grande */
+    font-weight: bold; /* Negrita */
+    text-align: center; /* Centrado */
+    margin-bottom: 30px; /* Espaciado inferior */
+    background: linear-gradient(90deg, #f9b234, #3ecd5e, #e44002, #952aff); /* Gradiente */
+    -webkit-background-clip: text; /* Safari/Chrome */
+    -moz-background-clip: text; /* Firefox antiguo */
+    background-clip: text; /* Estándar */
+    -webkit-text-fill-color: transparent; /* Fondo del texto transparente */
+    font-family: 'Poppins', sans-serif; /* Fuente personalizada */
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra del texto */
+}
+
+/* Contenedor general */
+.ag-format-container {
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* Contenedor de las cards */
+.ag-courses_box {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+/* Estilo de las cards */
+.ag-courses_item {
+    flex: 0 1 calc(33.333% - 20px); /* 3 columnas en pantallas grandes */
+    margin: 0;
+    overflow: hidden;
+    border-radius: 15px;
+    background-color: #121212;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
+    transition: all 0.3s ease; /* Suavizar la animación */
+}
+
+/* Estilo para el número de la lección */
+.ag-courses-item-number {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #121212;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 12px;
+    z-index: 2; /* Asegurarse que esté sobre el contenido */
+}
+
+/* Estilo del enlace de las cards */
+.ag-courses-item_link {
+    display: block;
+    padding: 20px;
+    position: relative;
+    color: #fff;
+    text-decoration: none;
+    background-color: inherit; /* Heredar color del padre */
+}
+
+/* Efecto al hacer hover en las cards */
+.ag-courses_item:hover {
+    background-color: var(--bg-color); /* Cambiar al color dinámico */
+    transform: translateY(-4px); /* Elevar ligeramente el card */
+}
+
+/* Fondo circular dinámico */
+.ag-courses-item_bg {
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    transition: transform 0.3s ease; /* Animación al hover */
+}
+
+/* Colores dinámicos para las cards */
+.ag-courses_item:nth-child(1n) {
+    --bg-color: #f9b234;
+}
+.ag-courses_item:nth-child(2n) {
+    --bg-color: #3ecd5e;
+}
+.ag-courses_item:nth-child(3n) {
+    --bg-color: #e44002;
+}
+.ag-courses_item:nth-child(4n) {
+    --bg-color: #952aff;
+}
+.ag-courses_item:nth-child(5n) {
+    --bg-color: #cd3e94;
+}
+.ag-courses_item:nth-child(6n) {
+    --bg-color: #4c49ea;
+}
+
+.ag-courses_item:nth-child(1n) .ag-courses-item_bg {
+    background-color: var(--bg-color);
+}
+
+/* Efecto de agrandamiento del fondo circular */
+.ag-courses_item:hover .ag-courses-item_bg {
+    transform: scale(1.5); /* Mantener el agrandamiento del círculo */
+}
+
+/* Estilo del título de la lección */
+.ag-courses-item_title {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0 0 15px;
+    text-align: center; /* Centrar el título */
+}
+
+/* Caja del estado de la lección */
+.ag-courses-item_date-box {
+    font-size: 14px;
+    text-align: center;
+}
+
+/* Estilo de las etiquetas (badges) */
+.badge {
+    padding: 5px 10px;
+    font-size: 12px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.ag-courses-item_link.disabled {
+    cursor: not-allowed;
+    opacity: 0.5; /* Reduce la opacidad */
+}
+
+/* Responsividad */
+
+/* 2 columnas en pantallas medianas */
+@media only screen and (max-width: 1200px) {
+    .ag-courses_item {
+        flex: 0 1 calc(50% - 20px);
+    }
+}
+
+/* 1 columna en pantallas pequeñas */
+@media only screen and (max-width: 768px) {
+    .ag-courses_item {
+        flex: 0 1 calc(100% - 20px);
+    }
+}

@@ -9,17 +9,27 @@ class Progress extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'lesson_id', 'completion_date', 'status', 'time_spent'];
+    protected $table = 'progresses';
 
-    // Relación con el modelo User
-    public function user()
+    protected $fillable = ['completion_date', 'status', 'time_spent'];
+
+    // Relación con el modelo Module
+
+    public function module()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Module::class);
     }
 
-    // Relación con el modelo Lesson
-    public function lesson()
+    public function getProgressPercentageAttribute()
     {
-        return $this->belongsTo(Lesson::class);
+        $module = $this->module; // Obtener el módulo relacionado
+        $totalLessons = $module->lessons()->count(); // Total de lecciones en el módulo
+        $completedLessons = $module->lessons()->where('status', true)->count(); // Lecciones completadas
+
+        if ($totalLessons === 0) {
+            return 0; // Evitar división por 0
+        }
+
+        return round(($completedLessons / $totalLessons) * 100);
     }
 }

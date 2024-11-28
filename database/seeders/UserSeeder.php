@@ -21,5 +21,13 @@ class UserSeeder extends Seeder
         foreach ($users as $user) {
             User::create($user)->assignRole('Admin');
         }
+
+        $users2 = [
+            ['name' => 'Rodrigo Jaldin', 'email' => 'rodrigo@gmail.com', 'password' => bcrypt('12345678')],
+        ];
+
+        foreach ($users2 as $user2) {
+            User::create($user2)->assignRole('User');
+        }
     }
 }
