@@ -11,23 +11,40 @@ class Progress extends Model
 
     protected $table = 'progresses';
 
-    protected $fillable = ['completion_date', 'status', 'time_spent'];
+    protected $fillable = ['lesson_id', 'user_id', 'completion_at', 'status', 'time_spent'];
 
-    // Relación con el modelo Module
-
-    public function module()
+    /**
+     * Relación con las lecciones.
+     */
+    public function lesson()
     {
-        return $this->belongsTo(Module::class);
+        return $this->belongsTo(Lesson::class);
     }
 
-    public function getProgressPercentageAttribute()
+    /**
+     * Relación con los usuarios.
+     */
+    public function user()
     {
-        $module = $this->module; // Obtener el módulo relacionado
-        $totalLessons = $module->lessons()->count(); // Total de lecciones en el módulo
-        $completedLessons = $module->lessons()->where('status', true)->count(); // Lecciones completadas
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Obtener el porcentaje de progreso del módulo para un usuario.
+     */
+    public static function getModuleProgressForUser($module, $userId)
+    {
+        $totalLessons = $module->lessons->count();
+
+        // Contar lecciones completadas por el usuario dentro del módulo
+        $completedLessons = $module->lessons()
+            ->whereHas('progresses', function ($query) use ($userId) {
+                $query->where('user_id', $userId)->where('status', 'completed');
+            })
+            ->count();
 
         if ($totalLessons === 0) {
-            return 0; // Evitar división por 0
+            return 0; // Evitar división por cero
         }
 
         return round(($completedLessons / $totalLessons) * 100);

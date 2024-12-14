@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\ModuleController;
+use App\Http\Controllers\ReportControler;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -28,5 +29,21 @@ Route::middleware(['auth'])->group(function () {
     // lessons
     Route::get('/lessons/show/{id}',[LessonController::class,'show'])->name('lessons.show');
     Route::get('/lessons/next/{id}', [LessonController::class, 'next'])->name('lessons.next');
+
+    // reports
+    Route::get('/reports', [ReportControler::class, 'index'])->name('reports.index');
+    Route::get('/reports/show/{id}', [ReportControler::class, 'show'])->name('reports.show');
+    Route::post('/reports/export', [ReportControler::class, 'export'])->name('reports.export');
+    Route::post('/reports/export-full', [ReportControler::class, 'exportFullReport'])->name('reports.exportFull');
+
+    // notifications
+    Route::get('/notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/create', [App\Http\Controllers\NotificationController::class, 'create'])->name('notifications.create');
+    Route::post('/notifications', [App\Http\Controllers\NotificationController::class, 'store'])->name('notifications.store');
+    Route::get('/notifications/{id}', [App\Http\Controllers\NotificationController::class, 'show'])->name('notifications.show');
+    Route::get('/notifications/{id}/edit', [App\Http\Controllers\NotificationController::class, 'edit'])->name('notifications.edit');
+    Route::put('/notifications/{id}', [App\Http\Controllers\NotificationController::class, 'update'])->name('notifications.update');
+    Route::delete('/notifications/{id}', [App\Http\Controllers\NotificationController::class, 'destroy'])->name('notifications.destroy');
+
 
 });

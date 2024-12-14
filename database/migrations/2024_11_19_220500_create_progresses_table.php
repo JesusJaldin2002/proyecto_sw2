@@ -13,11 +13,14 @@ return new class extends Migration
     {
         Schema::create('progresses', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('module_id')->constrained()->onDelete('cascade');
-            $table->dateTime('completion_date')->nullable();
-            $table->string('status');
-            $table->string('time_spent');
+            $table->foreignId('lesson_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->dateTime('completion_at')->nullable(); 
+            $table->string('status')->default('in_progress');
+            $table->string('time_spent')->nullable();
             $table->timestamps();
+            
+            $table->unique(['lesson_id', 'user_id']);
         });
     }
 

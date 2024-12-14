@@ -30,31 +30,35 @@
 
 @section('content')
     <div class="container mt-4">
-        <div class="row mt-4">
-            <!-- Botón Volver -->
-            <div class="col-6">
-                <button class="btn btn-primary w-100" onclick="history.back()">Volver Atrás</button>
+        <!-- Cabecera con el reloj -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="module-title"><strong>Lección: </strong>{{ ucwords(str_replace('_', ' ', $lesson->name)) }}</h1>
+            <div class="lesson-timer-container">
+                <h4 style="font-family: roboto"><strong>Tiempo en la Lección</strong></h4>
+                <div id="lesson-timer" style="font-size: 20px" class="timer-display">00:00</div>
             </div>
-            <!-- Botón Siguiente Lección -->
-            @if($lesson->module->id == 3)
-                <div class="col-6 text-right">
-                    <a href="{{ route('lessons.next', $lesson->id) }}" 
-                        class="btn btn-success w-100 disabled" 
-                        id="next-lesson-btn">
-                        Siguiente Lección
-                    </a>
-                </div>
-            @endif
         </div>
 
-        <div class="row mt-4">
-            <h1>{{ $lesson->name }}</h1>
-            <!-- Video de tutorial -->
+        <!-- Botones de navegación -->
+        <div class="row mt-2 mb-4">
             <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header text-center">Video Tutorial</div>
+                <a class="btn btn-primary w-100" href="{{ route('modules.show', $lesson->module->id) }}">Volver Atrás</a>
+            </div>
+            <div class="col-md-6 text-right">
+                <a href="{{ route('lessons.next', $lesson->id) }}" class="btn btn-success w-100 disabled" id="next-lesson-btn">
+                    Siguiente Lección
+                </a>
+            </div>
+        </div>
+
+        <!-- Contenido principal -->
+        <div class="row">
+            <!-- Video Tutorial -->
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-header text-center bg-secondary text-white"><strong>Video Tutorial</strong></div>
                     <div class="card-body">
-                        <video id="tutorial-video" width="100%" autoplay loop muted>
+                        <video id="tutorial-video" width="100%" autoplay loop muted class="rounded shadow">
                             <source src="{{ asset('videos/' . $lesson->video_path) }}" type="video/mp4">
                             Tu navegador no soporta el video.
                         </video>
@@ -63,34 +67,34 @@
             </div>
 
             <!-- Cámara -->
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header text-center">
-                        <button id="toggle-camera" class="btn btn-secondary">Encender Cámara</button>
+            <div class="col-md-7">
+                <div class="card shadow-sm">
+                    <div class="card-header text-center bg-secondary text-white">
+                        <button id="toggle-camera" class="btn btn-light">Encender Cámara</button>
                     </div>
-                    <div class="card-body">
-                        <canvas id="output_canvas" width="100%" height="320" style="display: none;"></canvas>
-                        <div id="loading" class="text-center">Cargando...</div>
+                    <div class="card-body text-center">
+                        <canvas id="output_canvas" width="100%" height="320" style="display: none;" ></canvas>
+                        <div id="loading" class="text-center mt-3">Cargando...</div>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- Palabra actual -->
         <div class="row mt-4">
-            <!-- Palabra -->
-            <div class="col-12">
-                <div class="text-center">
-                    <h2 class="word-display">{{ ucwords(str_replace('_', ' ', $lesson->name)) }}</h2>
-                </div>
-            </div>
-        </div>
-
-        <div class="row mt-4">
-            <!-- Contador de palabras correctas -->
             <div class="col-12 text-center">
-                <h4>Contador de Palabras Bien</h4>
-                <div class="counter-display">
-                    <span id="correct-count">0</span> / <span id="total-words">5</span>
+                <h2 class="word-display bg-light py-3 px-4 rounded shadow">
+                    {{ ucwords(str_replace('_', ' ', $lesson->name)) }}
+                </h2>
+            </div>
+        </div>
+
+        <!-- Contador de palabras correctas -->
+        <div class="row mt-4">
+            <div class="col-12 text-center">
+                <h4 class="mb-3">Contador de Palabras Correctas</h4>
+                <div class="counter-display bg-light py-3 px-4 rounded shadow d-inline-block">
+                    <span id="correct-count">0</span> / <span id="total-words">3</span>
                 </div>
             </div>
         </div>

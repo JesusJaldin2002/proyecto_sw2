@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Module;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth as Ath;
 
 class ModuleController extends Controller
 {
@@ -18,7 +18,14 @@ class ModuleController extends Controller
     public function show($id)
     {
         $module = Module::findOrFail($id);
-        $lessons = $module->lessons()->orderBy('id')->get();
+
+        $lessons = $module->lessons()
+            ->with(['progresses' => function ($query) {
+                $query->where('user_id', Ath::user()->id);
+            }])
+            ->orderBy('id')
+            ->get();
+
         return view('modules.show', compact('module', 'lessons'));
     }
 }

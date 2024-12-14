@@ -11,12 +11,12 @@
             <div class="ag-courses_box">
                 @foreach ($lessons as $index => $lesson)
                     @php
-                        // Verificar si el módulo requiere restricciones
-                        $requiresRestriction = $module->id == 3;
+                        // Verificar si la lección está completada para el usuario actual
+                        $isCompleted = $lesson->progresses->where('status', 'completed')->isNotEmpty();
 
                         // Verificar si la lección anterior está completada
                         $previousLesson = $lessons[$index - 1] ?? null;
-                        $isAccessible = !$requiresRestriction || $index === 0 || ($previousLesson && $previousLesson->status);
+                        $isAccessible = $index === 0 || ($previousLesson && $previousLesson->progresses->where('status', 'completed')->isNotEmpty());
                     @endphp
 
                     <div class="ag-courses_item">
@@ -35,8 +35,8 @@
 
                                 <!-- Estado de la lección -->
                                 <div class="ag-courses-item_date-box">
-                                    <span class="badge {{ $lesson->status ? 'bg-success' : 'bg-warning' }}">
-                                        {{ $lesson->status ? 'Completado' : 'Por Hacer' }}
+                                    <span class="badge {{ $isCompleted ? 'bg-success' : 'bg-warning' }}">
+                                        {{ $isCompleted ? 'Completado' : 'Por Hacer' }}
                                     </span>
                                 </div>
                             </a>
@@ -53,7 +53,7 @@
                                 <!-- Mensaje de bloqueo -->
                                 <div class="ag-courses-item_date-box">
                                     <span class="badge bg-secondary">
-                                        Debes completar la lección: {{ ucwords(str_replace('_', ' ', $previousLesson->name)) }}
+                                        Debes completar la lección: {{ ucwords(str_replace('_', ' ', $previousLesson->name ?? '')) }}
                                     </span>
                                 </div>
                             </div>

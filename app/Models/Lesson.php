@@ -9,8 +9,7 @@ class Lesson extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name','status'];
-
+    protected $fillable = ['name', 'status'];
 
     public function module()
     {
@@ -20,5 +19,10 @@ class Lesson extends Model
     public function users()
     {
         return $this->belongsToMany(User::class, 'lesson_user');
+    }
+
+    public function progresses()
+    {
+        return $this->hasMany(Progress::class);
     }
 }

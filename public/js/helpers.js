@@ -16,10 +16,15 @@ export function textToSpeech(text) {
     try {
         // Verifica si la API de síntesis de voz está disponible
         if ('speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined') {
-            // Crear un nuevo objeto SpeechSynthesisUtterance con el texto proporcionado
-            const utterance = new SpeechSynthesisUtterance(text);
+            // Reemplazar guiones bajos por espacios
+            const processedText = text.replace(/_/g, ' ');
+            
+            // Crear un nuevo objeto SpeechSynthesisUtterance con el texto procesado
+            const utterance = new SpeechSynthesisUtterance(processedText);
+            
             // Establecer el idioma del texto a sintetizar
-            utterance.lang = 'es';
+            utterance.lang = 'es'; // Idioma español
+            
             // Usar la API de síntesis de voz para hablar el texto
             speechSynthesis.speak(utterance);
         } else {
@@ -29,6 +34,7 @@ export function textToSpeech(text) {
         console.error('Error al intentar usar la síntesis de voz:', error);
     }
 }
+
 
 // Formatea las oraciones para su visualización.
 export function formatSentences(sent, sentence, repeSent) {

@@ -11,16 +11,21 @@ const toggleCameraButton = document.getElementById("toggle-camera");
 const loadingElement = document.getElementById("loading");
 const wordDisplayElement = document.querySelector(".word-display");
 const correctCountElement = document.getElementById("correct-count");
-const totalWordsElement = document.getElementById("total-words");
+const nextLessonButton = document.getElementById("next-lesson-btn");
+const timerElement = document.getElementById("lesson-timer");
 
 let camera = null;
 let kpSequence = [];
 let countFrame = 0;
 let handsPresent = false; // Estado de las manos
-let correctWords = 0;
+let correctCount = 0;
 const threshold = 0.8;
 const MAX_LENGTH_FRAMES = 15; // Máximo de frames para predicción
 const MIN_LENGTH_FRAMES = 10; // Mínimo de frames para predicción
+let timer = 0; // Temporizador en segundos
+let timerInterval;
+
+console.log(`Palabra esperada: ${expectedLetter}`);
 
 // Lista de palabras a detectar
 const actions = [
@@ -40,7 +45,19 @@ let currentWordIndex = 0;
 wordDisplayElement.textContent = actions[currentWordIndex]
     .replace(/_/g, " ")
     .toUpperCase();
-totalWordsElement.textContent = actions.length; // Total de palabras
+
+// Temporizador que inicia 5 segundos después de cargar la página
+setTimeout(() => {
+    timerInterval = setInterval(() => {
+        timer++;
+        const minutes = Math.floor(timer / 60);
+        const seconds = timer % 60;
+        timerElement.textContent = `${String(minutes).padStart(
+            2,
+            "0"
+        )}:${String(seconds).padStart(2, "0")}`;
+    }, 1000);
+}, 5000);
 
 tf.setBackend("wasm").then(async () => {
     const model = await tf.loadLayersModel("../../models/saludos1/model.json");
@@ -57,6 +74,7 @@ tf.setBackend("wasm").then(async () => {
     }
 
     let cooldown = false; // Estado para evitar predicciones consecutivas
+    let processedWords = new Set(); // Seguimiento de palabras ya procesadas
 
     function onResults(results) {
         canvasCtx.save();
@@ -109,17 +127,28 @@ tf.setBackend("wasm").then(async () => {
                         textToSpeech(detectedWord);
                         updateDetectedWord(detectedWord);
 
-                        // Verificar si la palabra es la correcta
-                        if (detectedWord === actions[currentWordIndex]) {
-                            correctWords += 1;
-                            correctCountElement.textContent = correctWords;
+                        if (detectedWord === expectedLetter) {
+                            correctCount++;
+                            correctCountElement.textContent = correctCount;
 
-                            if (correctWords < actions.length) {
-                                currentWordIndex += 1;
-                                updateDetectedWord(actions[currentWordIndex]);
-                            } else {
-                                alert("¡Lección completada!");
+                            // Desbloquear el botón al alcanzar 3 palabras correctas
+                            if (correctCount >= 3) {
+                                console.log(
+                                    "Se alcanzó el máximo de palabras correctas."
+                                );
+                                nextLessonButton.classList.remove("disabled");
+                                nextLessonButton.removeAttribute("disabled");
+
+                                // Extraer el tiempo del reloj directamente
+                                const formattedTime = timerElement.textContent;
+
+                                // Adjuntar el tiempo formateado al enlace del botón
+                                nextLessonButton.href += `?time=${formattedTime}`;
                             }
+                        } else {
+                            console.log(
+                                `Palabra detectada (${detectedWord}) no coincide con la esperada (${expectedLetter}).`
+                            );
                         }
                     } else {
                         console.log(

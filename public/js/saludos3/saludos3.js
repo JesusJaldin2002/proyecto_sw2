@@ -15,6 +15,7 @@ const loadingElement = document.getElementById("loading");
 const wordDisplayElement = document.querySelector(".word-display");
 const correctCountElement = document.getElementById("correct-count");
 const nextLessonButton = document.getElementById("next-lesson-btn");
+const timerElement = document.getElementById("lesson-timer");
 
 let gestureRecognizer;
 let runningMode = "VIDEO";
@@ -22,12 +23,27 @@ let webcamRunning = false;
 let lastDetectedWord = ""; // Última palabra detectada
 let cooldownActive = false; // Controla si el cooldown está activo
 let correctCount = 0; // Contador de palabras correctas
+let timer = 0; // Temporizador en segundos
+let timerInterval;
 
 // `expectedLetter` es definida en el Blade y pasada como variable global.
 console.log(`Letra esperada: ${expectedLetter}`);
 
 const videoHeight = 320; // Aseguramos que coincide con el canvas en la vista
 const videoWidth = 480; // Ajustamos las proporciones
+
+// Temporizador que inicia 5 segundos después de cargar la página
+setTimeout(() => {
+    timerInterval = setInterval(() => {
+        timer++;
+        const minutes = Math.floor(timer / 60);
+        const seconds = timer % 60;
+        timerElement.textContent = `${String(minutes).padStart(
+            2,
+            "0"
+        )}:${String(seconds).padStart(2, "0")}`;
+    }, 1000);
+}, 5000);
 
 // Cargar modelo de Mediapipe
 const createGestureRecognizer = async () => {
@@ -75,6 +91,8 @@ const enableCam = async () => {
 
     try {
         const stream = await navigator.mediaDevices.getUserMedia(constraints);
+
+        // Crear el elemento de video
         const videoElement = document.createElement("video");
         videoElement.setAttribute("id", "webcam");
         videoElement.autoplay = true;
@@ -83,10 +101,31 @@ const enableCam = async () => {
         videoElement.width = videoWidth;
         videoElement.height = videoHeight;
 
-        canvasElement.parentElement.insertBefore(videoElement, canvasElement);
+        // Obtener el contenedor del canvas y su padre
+        const canvasParent = canvasElement.parentElement;
 
+        // Crear un contenedor para centrar video y canvas
+        const container = document.createElement("div");
+        container.style.display = "flex";
+        container.style.flexDirection = "column"; // Para que estén uno sobre otro
+        container.style.alignItems = "center"; // Centrado horizontal
+        container.style.justifyContent = "center"; // Centrado vertical
+        container.style.width = "100%"; // Asegura que ocupe todo el espacio disponible
+        videoElement.style.marginTop = "20px";
+        // Mover el canvas al nuevo contenedor
+        canvasParent.insertBefore(container, canvasElement);
+        container.appendChild(videoElement);
+        container.appendChild(canvasElement);
+
+        // Configurar el stream para el video
         videoElement.srcObject = stream;
-        videoElement.addEventListener("loadeddata", () => predictWebcam(videoElement));
+
+        // Escuchar el evento cuando se cargue el video
+        videoElement.addEventListener("loadeddata", () =>
+            predictWebcam(videoElement)
+        );
+
+        // Marcar que la cámara está activa
         webcamRunning = true;
         toggleCameraButton.textContent = "Apagar Cámara";
         console.log("Cámara activada.");
@@ -103,14 +142,23 @@ async function predictWebcam(videoElement) {
     }
 
     const nowInMs = Date.now();
-    const results = await gestureRecognizer.recognizeForVideo(videoElement, nowInMs);
+    const results = await gestureRecognizer.recognizeForVideo(
+        videoElement,
+        nowInMs
+    );
 
     canvasElement.width = videoElement.videoWidth;
     canvasElement.height = videoElement.videoHeight;
 
     canvasCtx.save();
     canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-    canvasCtx.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
+    canvasCtx.drawImage(
+        videoElement,
+        0,
+        0,
+        canvasElement.width,
+        canvasElement.height
+    );
 
     const drawingUtils = new DrawingUtils(canvasCtx);
 
@@ -131,7 +179,8 @@ async function predictWebcam(videoElement) {
     canvasCtx.restore();
 
     if (results?.gestures.length > 0) {
-        const detectedLetter = results.gestures[0][0].categoryName.toLowerCase();
+        const detectedLetter =
+            results.gestures[0][0].categoryName.toLowerCase();
         console.log(`Letra detectada: ${detectedLetter}`);
 
         if (!cooldownActive && detectedLetter !== lastDetectedWord) {
@@ -146,13 +195,21 @@ async function predictWebcam(videoElement) {
                 correctCount++;
                 correctCountElement.textContent = correctCount;
 
-                if (correctCount >= 5) {
+                if (correctCount >= 3) {
                     console.log("Se alcanzó el máximo de palabras correctas.");
                     nextLessonButton.classList.remove("disabled");
                     nextLessonButton.removeAttribute("disabled");
+
+                    // Extraer el tiempo del reloj directamente
+                    const formattedTime = timerElement.textContent;
+
+                    // Adjuntar el tiempo formateado al enlace del botón
+                    nextLessonButton.href += `?time=${formattedTime}`;
                 }
             } else {
-                console.log(`Letra detectada (${detectedLetter}) no coincide con la esperada (${expectedLetter}).`);
+                console.log(
+                    `Letra detectada (${detectedLetter}) no coincide con la esperada (${expectedLetter}).`
+                );
             }
 
             textToSpeech(detectedLetter);
